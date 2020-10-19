@@ -35,7 +35,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "init":
-		// TODO
+		// TODO(jbd): Implement.
 	case "build":
 		var pkg string
 		if len(os.Args) == 2 {
@@ -46,6 +46,8 @@ func main() {
 		if err := build(pkg); err != nil {
 			log.Fatal(err)
 		}
+	case "deploy":
+		// TODO(jbd): Implement.
 	}
 }
 
