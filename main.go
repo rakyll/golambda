@@ -42,6 +42,8 @@ func main() {
 		}
 	case "update":
 		// TODO(jbd): Implement.
+	default:
+		printUsage(1)
 	}
 }
 
