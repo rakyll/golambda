@@ -17,11 +17,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 )
 
 func main() {
@@ -49,37 +46,6 @@ func main() {
 	case "deploy":
 		// TODO(jbd): Implement.
 	}
-}
-
-func build(pkg string) error {
-	dir, err := ioutil.TempDir("", "golambda")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(dir)
-
-	out := filepath.Join(dir, "main.out")
-	cmd := exec.Command("go", "build", "-o", out, "-v")
-	cmd.Env = mergeEnv()
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("go build failed: %s", out)
-	}
-	if err := cmd.Wait(); err != nil {
-		return err
-	}
-	// TODO(jbd): Pass go build flags to go build.
-	zipout, err := zipBinary(dir, out)
-	if err != nil {
-		return err
-	}
-	return os.Rename(zipout, filepath.Join(".", "main.zip"))
-}
-
-func mergeEnv() []string {
-	env := os.Environ()
-	return append(env, buildEnv...)
 }
 
 func printUsage(code int) {
