@@ -25,6 +25,8 @@ import (
 	"path/filepath"
 )
 
+const mainZip = "main.zip"
+
 func build(args ...string) error {
 	dir, err := ioutil.TempDir("", "golambda")
 	if err != nil {
@@ -50,7 +52,7 @@ func build(args ...string) error {
 	if err != nil {
 		return err
 	}
-	return os.Rename(zipout, filepath.Join(".", "main.zip"))
+	return os.Rename(zipout, filepath.Join(".", mainZip))
 }
 
 func mergeEnv() []string {
@@ -78,7 +80,7 @@ func zipBinary(dir, out string) (zipout string, err error) {
 		return "", err
 	}
 
-	zipout = filepath.Join(dir, "main.zip")
+	zipout = filepath.Join(dir, mainZip)
 	if err := ioutil.WriteFile(zipout, buf.Bytes(), 0644); err != nil {
 		return "", err
 	}
