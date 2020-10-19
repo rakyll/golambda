@@ -28,7 +28,6 @@ func main() {
 	flag.Usage = func() {
 		printUsage(1)
 	}
-	flag.Parse()
 
 	switch os.Args[1] {
 	case "init":
@@ -37,7 +36,11 @@ func main() {
 		if err := build(os.Args[2:]...); err != nil {
 			log.Fatal(err)
 		}
-	case "deploy":
+	case "create":
+		if err := create(); err != nil {
+			log.Fatal(err)
+		}
+	case "update":
 		// TODO(jbd): Implement.
 	}
 }
@@ -53,4 +56,4 @@ Commands:
   - build  Builds the package and generates a zip.
 `
 
-// TODO(jbd): Add init and deploy subcommands.
+// TODO(jbd): Add init, create and update subcommands.
