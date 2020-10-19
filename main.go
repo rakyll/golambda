@@ -34,13 +34,7 @@ func main() {
 	case "init":
 		// TODO(jbd): Implement.
 	case "build":
-		var pkg string
-		if len(os.Args) == 2 {
-			pkg = "."
-		} else {
-			pkg = os.Args[2]
-		}
-		if err := build(pkg); err != nil {
+		if err := build(os.Args[2:]...); err != nil {
 			log.Fatal(err)
 		}
 	case "deploy":

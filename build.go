@@ -25,7 +25,7 @@ import (
 	"path/filepath"
 )
 
-func build(pkg string) error {
+func build(args ...string) error {
 	dir, err := ioutil.TempDir("", "golambda")
 	if err != nil {
 		return err
@@ -33,7 +33,10 @@ func build(pkg string) error {
 	defer os.RemoveAll(dir)
 
 	out := filepath.Join(dir, "main.out")
-	cmd := exec.Command("go", "build", "-o", out, "-v")
+	buildArgs := []string{"build", "-o", out}
+	buildArgs = append(buildArgs, args...)
+
+	cmd := exec.Command("go", buildArgs...)
 	cmd.Env = mergeEnv()
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -43,7 +46,6 @@ func build(pkg string) error {
 	if err := cmd.Wait(); err != nil {
 		return err
 	}
-	// TODO(jbd): Pass go build flags to go build.
 	zipout, err := zipBinary(dir, out)
 	if err != nil {
 		return err
