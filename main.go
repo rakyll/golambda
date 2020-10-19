@@ -53,7 +53,7 @@ func printUsage(code int) {
 const usageText = `golambda [cmd] <options>
 
 Commands:
-  - build  Builds the package and generates a zip.
+  - build   Builds the package and generates a zip.
+  - create  Creates a new lambda function from a zip.
+  - update  Updates the existing lambda function with a zip.
 `
-
-// TODO(jbd): Add init, create and update subcommands.
