@@ -31,3 +31,5 @@ Update and publish a Lambda function:
 # by default, it uploads ./main.zip.
 $ golambda update -name helloworld
 ```
+
+Note: This is a personal project and is not officially supported.
