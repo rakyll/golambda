@@ -38,7 +38,7 @@ func create() error {
 		return errors.New("missing role")
 	}
 	if zip == "" {
-		zip = `fileb://` + filepath.Join(".", mainZip)
+		zip = defaultZip()
 	}
 
 	// TODO(jbd): Check if main.zip exists.
@@ -59,4 +59,39 @@ func create() error {
 		return err
 	}
 	return nil
+}
+
+func update() error {
+	var name, zip string
+	var publish bool
+	fset := flag.NewFlagSet("update", flag.ExitOnError)
+	fset.StringVar(&name, "name", "", "")
+	fset.BoolVar(&publish, "publish", true, "")
+	fset.StringVar(&zip, "zip", "", "")
+	fset.Parse(os.Args[2:])
+
+	if name == "" {
+		return errors.New("missing function name")
+	}
+	if zip == "" {
+		zip = defaultZip()
+	}
+	cmd := exec.Command("aws",
+		"lambda", "update-function-code",
+		"--function-name", name,
+		"--zip-file", zip,
+	)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	if err := cmd.Wait(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func defaultZip() string {
+	return `fileb://` + filepath.Join(".", mainZip)
 }

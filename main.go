@@ -41,7 +41,9 @@ func main() {
 			log.Fatal(err)
 		}
 	case "update":
-		// TODO(jbd): Implement.
+		if err := update(); err != nil {
+			log.Fatal(err)
+		}
 	default:
 		printUsage(1)
 	}
