@@ -18,41 +18,38 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 )
 
-var (
-	lambdaFunction string
-	lambdaRole     string
-	lambdaZip      string
-)
-
 func create() error {
-	flag.StringVar(&lambdaFunction, "name", "", "")
-	flag.StringVar(&lambdaRole, "role", "", "")
-	flag.StringVar(&lambdaZip, "zip", "", "")
-	flag.Parse()
+	// TODO(jbd): Add other aws lambda create-function flags.
+	var name, role, zip string
+	fset := flag.NewFlagSet("create", flag.ExitOnError)
+	fset.StringVar(&name, "name", "", "")
+	fset.StringVar(&role, "role", "", "")
+	fset.StringVar(&zip, "zip", "", "")
+	fset.Parse(os.Args[2:])
 
-	if lambdaFunction == "" {
+	if name == "" {
 		return errors.New("missing function name")
 	}
-	if lambdaRole == "" {
+	if role == "" {
 		return errors.New("missing role")
 	}
-	if lambdaZip == "" {
-		lambdaZip = `fileb://` + filepath.Join(".", mainZip)
+	if zip == "" {
+		zip = `fileb://` + filepath.Join(".", mainZip)
 	}
 
-	// TODO(jbd): Add other aws lambda create-function flags.
 	// TODO(jbd): Check if main.zip exists.
 	cmd := exec.Command("aws",
 		"lambda", "create-function",
-		"--function-name", lambdaFunction,
+		"--function-name", name,
 		"--runtime", "go1.x",
-		"--zip-file", lambdaZip,
+		"--zip-file", zip,
 		"--handler", "main",
-		"--role", lambdaRole,
+		"--role", role,
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
