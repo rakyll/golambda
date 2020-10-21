@@ -24,11 +24,12 @@ import (
 
 func create() error {
 	// TODO(jbd): Add other aws lambda create-function flags.
-	var name, role, zip string
+	var name, role, zip, endpointURL string
 	fset := flag.NewFlagSet("create", flag.ExitOnError)
 	fset.StringVar(&name, "name", "", "")
 	fset.StringVar(&role, "role", "", "")
 	fset.StringVar(&zip, "zip", "", "")
+	fset.StringVar(&endpointURL, "endpoint-url", "", "")
 	fset.Parse(os.Args[2:])
 
 	if name == "" {
@@ -41,15 +42,19 @@ func create() error {
 		zip = defaultZip()
 	}
 
+	args := []string{"lambda"}
+	if endpointURL != "" {
+		args = append(args, "--endpoint-url", endpointURL)
+	}
 	// TODO(jbd): Check if main.zip exists.
-	cmd := exec.Command("aws",
-		"lambda", "create-function",
+	args = append(args, "create-function",
 		"--function-name", name,
 		"--runtime", "go1.x",
 		"--zip-file", zip,
 		"--handler", "main",
 		"--role", role,
 	)
+	cmd := exec.Command("aws", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
@@ -62,12 +67,13 @@ func create() error {
 }
 
 func update() error {
-	var name, zip string
+	var name, zip, endpointURL string
 	var publish bool
 	fset := flag.NewFlagSet("update", flag.ExitOnError)
 	fset.StringVar(&name, "name", "", "")
 	fset.BoolVar(&publish, "publish", true, "")
 	fset.StringVar(&zip, "zip", "", "")
+	fset.StringVar(&endpointURL, "endpoint-url", "", "")
 	fset.Parse(os.Args[2:])
 
 	if name == "" {
@@ -76,11 +82,15 @@ func update() error {
 	if zip == "" {
 		zip = defaultZip()
 	}
-	cmd := exec.Command("aws",
-		"lambda", "update-function-code",
+	args := []string{"lambda"}
+	if endpointURL != "" {
+		args = append(args, "--endpoint-url", endpointURL)
+	}
+	args = append(args, "update-function-code",
 		"--function-name", name,
 		"--zip-file", zip,
 	)
+	cmd := exec.Command("aws", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
